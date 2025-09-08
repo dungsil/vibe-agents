@@ -12,56 +12,61 @@ This implementation fulfills all requirements from the original specification fo
 - **✅ Project-Based Separation**: Virtual keys provide logical separation for statistics and management
 
 ### Technical Implementation
-- **Backend**: FastAPI-based HTTP server with async request handling
-- **Database**: SQLite for persistence (virtual keys, real keys, usage records)
-- **CLI Management**: Comprehensive command-line interface for administration
+- **Backend**: Elysia-based HTTP server with TypeScript and Bun runtime
+- **Database**: SQLite with better-sqlite3 for high-performance synchronous operations
+- **CLI Management**: Commander.js-based comprehensive command-line interface
 - **Configuration**: YAML-based configuration with secure real API key storage
 - **Admin API**: RESTful endpoints for programmatic management
+- **Modern Stack**: TypeScript, Bun, Elysia for excellent performance and developer experience
 
 ## 📁 File Structure
 
 ```
 specs/001-llm-api/
 ├── spec.md              # Feature specification (business requirements)
-├── gateway.py           # Main FastAPI proxy server
-├── cli.py               # Command-line management interface
+├── package.json         # Bun/Node.js dependencies and scripts
+├── tsconfig.json        # TypeScript configuration
+├── src/
+│   ├── gateway.ts       # Main Elysia proxy server
+│   ├── cli.ts           # Command-line management interface
+│   └── test.ts          # TypeScript integration tests
 ├── config.yaml          # Configuration template
-├── requirements.txt     # Python dependencies
 ├── README.md            # Comprehensive documentation
-├── demo.py              # Demonstration script with sample data
-├── test_gateway.py      # Basic integration tests
-├── quickstart.sh        # Quick setup script
-├── Dockerfile           # Container deployment
+├── demo.py              # Demonstration script (preserved for reference)
+├── test_gateway.py      # Python tests (preserved for reference)
+├── quickstart.sh        # Quick setup script (updated for Bun)
+├── Dockerfile           # Container deployment (updated for Bun)
 ├── docker-compose.yml   # Multi-container orchestration
 └── .gitignore          # Git ignore patterns
 ```
 
 ## 🚀 Quick Start
 
-1. **Initialize**: `python cli.py init`
-2. **Create Keys**: `python cli.py keys create "My Project"`
-3. **Configure**: `python cli.py config set-key openai "your-api-key"`
-4. **Start**: `python cli.py serve`
+1. **Install**: `bun install`
+2. **Initialize**: `bun run src/cli.ts init`
+3. **Create Keys**: `bun run src/cli.ts keys create "My Project"`
+4. **Configure**: `bun run src/cli.ts config set-key openai "your-api-key"`
+5. **Start**: `bun run src/cli.ts serve`
 
 ## 🔧 Key Features
 
 ### Virtual Key Management
 ```bash
-python cli.py keys create "Project Name"    # Create virtual key
-python cli.py keys list                     # List all keys
-python cli.py keys revoke KEY_ID            # Revoke key
+bun run src/cli.ts keys create "Project Name"    # Create virtual key
+bun run src/cli.ts keys list                     # List all keys
+bun run src/cli.ts keys revoke KEY_ID            # Revoke key
 ```
 
 ### Usage Tracking
 ```bash
-python cli.py stats                         # View usage statistics
-python cli.py stats --output json          # JSON format
+bun run src/cli.ts stats                         # View usage statistics
+bun run src/cli.ts stats --output json          # JSON format
 ```
 
 ### Configuration
 ```bash
-python cli.py config set-key openai "sk-..."     # Set real API key
-python cli.py config list-keys                   # List configured keys
+bun run src/cli.ts config set-key openai "sk-..."     # Set real API key
+bun run src/cli.ts config list-keys                   # List configured keys
 ```
 
 ## 🌐 API Endpoints
@@ -81,7 +86,7 @@ python cli.py config list-keys                   # List configured keys
 ```
 Client Application
        ↓ (Virtual API Key)
-LLM API Gateway
+LLM API Gateway (Elysia + Bun)
   ├── Authenticate virtual key
   ├── Map to real API key
   ├── Proxy request to LLM provider
@@ -119,6 +124,13 @@ docker run -p 8000:8000 -v $(pwd)/data:/app/data llm-gateway
 docker-compose up -d
 ```
 
+### Local Development
+```bash
+bun install                                    # Install dependencies
+bun run src/cli.ts init                       # Initialize
+bun run dev                                   # Start with hot reload
+```
+
 ## 🔒 Security Considerations
 
 - Real API keys stored separately from virtual keys
@@ -134,6 +146,14 @@ The implementation includes a working demo that shows:
 - Cost estimation totaling $2.25
 - Statistics broken down by project
 
+## ⚡ Performance Benefits
+
+The TypeScript + Bun + Elysia stack provides:
+- **Faster startup**: Bun's optimized runtime reduces cold start times
+- **Better performance**: Synchronous SQLite operations with better-sqlite3
+- **Type safety**: Full TypeScript support prevents runtime errors
+- **Modern tooling**: Latest ECMAScript features and optimizations
+
 ## ✨ Next Steps for Production
 
 1. **Add Authentication**: Secure admin endpoints
@@ -142,4 +162,4 @@ The implementation includes a working demo that shows:
 4. **Scaling**: Consider PostgreSQL for multi-instance deployments
 5. **Provider Support**: Add more LLM providers as needed
 
-This implementation provides a complete, functional LLM API Gateway that meets all the specified requirements and is ready for self-hosted deployment.
+This implementation provides a complete, functional LLM API Gateway that meets all the specified requirements and is ready for self-hosted deployment with modern TypeScript tooling.

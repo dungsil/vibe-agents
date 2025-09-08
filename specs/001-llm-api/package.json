@@ -1,0 +1,27 @@
+{
+  "name": "llm-api-gateway",
+  "version": "1.0.0",
+  "description": "LLM API Gateway service for usage tracking with virtual keys",
+  "main": "dist/gateway.js",
+  "scripts": {
+    "dev": "bun run --hot src/gateway.ts",
+    "build": "bun build src/gateway.ts --outdir dist --target bun",
+    "start": "bun run dist/gateway.js",
+    "cli": "bun run src/cli.ts",
+    "test": "bun run src/test.ts"
+  },
+  "keywords": ["llm", "api", "gateway", "proxy", "usage-tracking"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "elysia": "^0.8.15",
+    "@elysiajs/bearer": "^0.8.0",
+    "bun": "^1.0.0",
+    "commander": "^11.1.0",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3"
+  }
+}

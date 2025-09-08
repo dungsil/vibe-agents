@@ -6,55 +6,60 @@ set -e
 echo "🚀 LLM API Gateway Quick Start"
 echo "=============================="
 
-# Check if Python is available
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Python 3 is required but not installed"
+# Check if Bun is available
+if ! command -v bun &> /dev/null; then
+    echo "❌ Bun is required but not installed"
+    echo "   Install from: https://bun.sh/"
     exit 1
 fi
 
 # Check if we're in the right directory
-if [ ! -f "gateway.py" ]; then
+if [ ! -f "src/gateway.ts" ]; then
     echo "❌ Please run this script from the LLM API Gateway directory"
     exit 1
 fi
 
-echo "✅ Python 3 found"
+echo "✅ Bun found"
+
+# Install dependencies
+echo "📦 Installing dependencies..."
+bun install
 
 # Initialize if not already done
 if [ ! -f "gateway.db" ]; then
     echo "🔧 Initializing gateway..."
-    python3 cli.py init
+    bun run src/cli.ts init
 else
     echo "✅ Gateway already initialized"
 fi
 
 # Check if any virtual keys exist
-KEY_COUNT=$(python3 cli.py keys list --output json 2>/dev/null | python3 -c "import sys, json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+KEY_COUNT=$(bun run src/cli.ts keys list --output json 2>/dev/null | bun -e "console.log(JSON.parse(await Bun.stdin.text()).length)" 2>/dev/null || echo "0")
 
 if [ "$KEY_COUNT" -eq 0 ]; then
     echo "🔑 Creating demo virtual key..."
-    python3 cli.py keys create "Quick Start Demo"
+    bun run src/cli.ts keys create "Quick Start Demo"
     echo "✅ Demo virtual key created"
 fi
 
 # Show current status
 echo ""
 echo "📊 Current Status:"
-python3 cli.py keys list
+bun run src/cli.ts keys list
 echo ""
-python3 cli.py stats
+bun run src/cli.ts stats
 
 echo ""
 echo "🎯 Next Steps:"
 echo "1. Configure real API keys:"
-echo "   python3 cli.py config set-key openai 'your-openai-api-key'"
-echo "   python3 cli.py config set-key anthropic 'your-anthropic-api-key'"
+echo "   bun run src/cli.ts config set-key openai 'your-openai-api-key'"
+echo "   bun run src/cli.ts config set-key anthropic 'your-anthropic-api-key'"
 echo ""
 echo "2. Start the gateway:"
-echo "   python3 cli.py serve"
+echo "   bun run src/cli.ts serve"
 echo ""
 echo "3. Test with your virtual key:"
-FIRST_KEY=$(python3 cli.py keys list --output json 2>/dev/null | python3 -c "import sys, json; data=json.load(sys.stdin); print(data[0]['id'] if data else '')" 2>/dev/null || echo "")
+FIRST_KEY=$(bun run src/cli.ts keys list --output json 2>/dev/null | bun -e "const data=JSON.parse(await Bun.stdin.text()); console.log(data[0]?.id || '')" 2>/dev/null || echo "")
 if [ -n "$FIRST_KEY" ]; then
     echo "   curl -H 'Authorization: Bearer $FIRST_KEY' \\"
     echo "        -H 'Content-Type: application/json' \\"

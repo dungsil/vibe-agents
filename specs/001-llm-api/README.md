@@ -2,6 +2,8 @@
 
 A self-hosted proxy service for LLM API calls that tracks usage per project using virtual API keys.
 
+Built with TypeScript, Bun, and Elysia for high performance and modern development experience.
+
 ## Features
 
 - **API Proxying**: Routes requests to OpenAI, Anthropic, and other LLM providers
@@ -10,6 +12,8 @@ A self-hosted proxy service for LLM API calls that tracks usage per project usin
 - **Self-Hosted**: Deploy on your own infrastructure with minimal dependencies
 - **CLI Management**: Command-line tools for key management and administration
 - **RESTful Admin API**: HTTP endpoints for programmatic management
+- **TypeScript & Bun**: Modern runtime with excellent performance
+- **Elysia Framework**: Fast and type-safe web framework
 
 ## Quick Start
 
@@ -17,10 +21,10 @@ A self-hosted proxy service for LLM API calls that tracks usage per project usin
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+bun install
 
 # Initialize the gateway
-python cli.py init
+bun run src/cli.ts init
 ```
 
 ### 2. Configuration
@@ -38,28 +42,24 @@ providers:
 Or use the CLI:
 
 ```bash
-python cli.py config set-key openai "sk-your-openai-key-here"
-python cli.py config set-key anthropic "sk-ant-your-anthropic-key-here"
+bun run src/cli.ts config set-key openai "sk-your-openai-key-here"
+bun run src/cli.ts config set-key anthropic "sk-ant-your-anthropic-key-here"
 ```
 
 ### 3. Create Virtual Keys
 
-```bash
-# Create a virtual key for your project
-python cli.py keys create "My Project"
-
 # List all virtual keys
-python cli.py keys list
+bun run src/cli.ts keys list
 ```
 
 ### 4. Start the Gateway
 
 ```bash
 # Start the server
-python cli.py serve
+bun run src/cli.ts serve
 
 # Or run directly
-python gateway.py
+bun run src/gateway.ts
 ```
 
 The gateway will be available at `http://localhost:8000`
@@ -97,17 +97,17 @@ curl http://localhost:8000/v1/messages \
 
 ```bash
 # Virtual key management
-python cli.py keys create "Project Name"    # Create new virtual key
-python cli.py keys list                     # List all virtual keys
-python cli.py keys revoke KEY_ID            # Revoke a virtual key
+bun run src/cli.ts keys create "Project Name"    # Create new virtual key
+bun run src/cli.ts keys list                     # List all virtual keys
+bun run src/cli.ts keys revoke KEY_ID            # Revoke a virtual key
 
 # Configuration management
-python cli.py config set-key openai "sk-..."  # Set real API key
-python cli.py config list-keys                # List configured keys (masked)
+bun run src/cli.ts config set-key openai "sk-..."  # Set real API key
+bun run src/cli.ts config list-keys                # List configured keys (masked)
 
 # Usage statistics
-python cli.py stats                         # View usage statistics
-python cli.py stats --output json          # JSON format
+bun run src/cli.ts stats                         # View usage statistics
+bun run src/cli.ts stats --output json          # JSON format
 ```
 
 #### Admin API Endpoints

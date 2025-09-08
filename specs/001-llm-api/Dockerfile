@@ -1,29 +1,23 @@
-FROM python:3.11-slim
+FROM oven/bun:1 as base
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first for better layer caching
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy package.json and install dependencies
+COPY package.json ./
+COPY tsconfig.json ./
+RUN bun install
 
 # Copy application code
-COPY . .
+COPY src/ ./src/
+
+# Build the application
+RUN bun run build
 
 # Create data directory for database
 RUN mkdir -p /app/data
 
-# Make CLI executable
-RUN chmod +x cli.py
-
 # Initialize the gateway
-RUN python cli.py init
+RUN bun run src/cli.ts init
 
 # Expose port
 EXPOSE 8000
@@ -33,4 +27,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Default command
-CMD ["python", "gateway.py"]
+CMD ["bun", "run", "src/gateway.ts"]
