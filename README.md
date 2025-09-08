@@ -165,6 +165,8 @@ vibe-agents/
 
 ## 📖 자세히 알아보기
 
+- **[워크플로우 가이드](./docs/workflow.md)** - 상세한 단계별 개발 프로세스
+- **[빠른 시작 예제](./docs/quickstart.md)** - 첫 번째 AI 에이전트 만들기
 - **[헌법](./memory/constitution.md)** - 프로젝트의 핵심 원칙과 규칙
 - **[명세서 템플릿](./templates/spec-template.md)** - 기능 명세서 작성 가이드
 - **[구현 계획 템플릿](./templates/plan-template.md)** - 기술 구현 계획 가이드
