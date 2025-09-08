@@ -110,7 +110,10 @@ def get_real_api_key(provider: str) -> Optional[str]:
     cursor.execute("SELECT api_key FROM real_keys WHERE provider = ?", (provider,))
     result = cursor.fetchone()
     conn.close()
-    return result[0] if result else None
+    
+    if result and result[0]:
+        return result[0]
+    return None
 
 def log_usage(virtual_key_id: str, provider: str, endpoint: str, 
               request_tokens: int, response_tokens: int, estimated_cost: float):
@@ -132,29 +135,42 @@ async def startup_event():
 @app.post("/admin/virtual-keys", response_model=VirtualKeyResponse)
 async def create_virtual_key(key_create: VirtualKeyCreate):
     """Create a new virtual API key for a project."""
+    # Validate project name
+    if not key_create.project_name or not key_create.project_name.strip():
+        raise HTTPException(status_code=400, detail="Project name cannot be empty")
+    
+    if len(key_create.project_name.strip()) > 100:
+        raise HTTPException(status_code=400, detail="Project name too long (max 100 characters)")
+    
     virtual_key_id = str(uuid.uuid4())
+    project_name = key_create.project_name.strip()
     
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO virtual_keys (id, project_name) VALUES (?, ?)",
-        (virtual_key_id, key_create.project_name)
-    )
-    conn.commit()
     
-    cursor.execute(
-        "SELECT id, project_name, created_at, is_active FROM virtual_keys WHERE id = ?",
-        (virtual_key_id,)
-    )
-    result = cursor.fetchone()
-    conn.close()
-    
-    return VirtualKeyResponse(
-        id=result[0],
-        project_name=result[1],
-        created_at=result[2],
-        is_active=result[3]
-    )
+    try:
+        cursor.execute(
+            "INSERT INTO virtual_keys (id, project_name) VALUES (?, ?)",
+            (virtual_key_id, project_name)
+        )
+        conn.commit()
+        
+        cursor.execute(
+            "SELECT id, project_name, created_at, is_active FROM virtual_keys WHERE id = ?",
+            (virtual_key_id,)
+        )
+        result = cursor.fetchone()
+        
+        return VirtualKeyResponse(
+            id=result[0],
+            project_name=result[1],
+            created_at=result[2],
+            is_active=result[3]
+        )
+    except sqlite3.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
 
 @app.get("/admin/virtual-keys", response_model=List[VirtualKeyResponse])
 async def list_virtual_keys():
